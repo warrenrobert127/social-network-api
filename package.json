@@ -19,6 +19,7 @@
   "homepage": "https://github.com/warrenrobert127/social-network-api#readme",
   "dependencies": {
     "express": "^4.17.2",
+    "inquirer": "^8.2.0",
     "mongoose": "^6.2.1"
   }
 }
