@@ -1,63 +1,25 @@
-var app = require('express').Router();
+const router = require('express').Router();
 
+const {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  addFriend,
+  removeFriend,
+} = require('../../controllers/user-controller');
 
+// Set up GET all and POST at /api/users
+router.route('/').get().post();
 
-// A user has been created already for our activity purposes
-db.User.create({ name: 'Ernest Hemingway' })
-  .then(dbUser => {
-    console.log(dbUser);
-  })
-  .catch(({ message }) => {
-    console.log(message);
-  });
+// /api/users/:id
+router.route('/:id').get(getUserById).put(updateUser).delete(deleteUser);
 
-// Retrieve all notes
-app.get('/users', (req, res) => {
-  db.User.find({})
-    .then(dbUser => {
-      res.json(dbUser);
-    })
-    .catch(err => {
-      res.json(err);
-    });
-});
+// /api/users/:userId/friends/:friendId
+router.route('/:id/friends/:friendId').post(addFriend).delete(removeFriend);
 
-// Retrieve all users
-app.get('/users', (req, res) => {
-  db.User.find({})
-    .then(dbUser => {
-      res.json(dbUser);
-    })
-    .catch(err => {
-      res.json(err);
-    });
-});
+// /api/users
+router.route('/').get(getAllUsers).post(createUser);
 
-// Create a new note and associate it with user
-app.post('/submit', ({ body }, res) => {
-  db.Note.create(body)
-    .then(({ _id }) =>
-      db.User.findOneAndUpdate({}, { $push: { notes: _id } }, { new: true })
-    )
-    .then(dbUser => {
-      res.json(dbUser);
-    })
-    .catch(err => {
-      res.json(err);
-    });
-});
-
-app.get('/populate', (req, res) => {
-  db.User.find({})
-    .populate({
-      path: 'notes',
-      select: '-__v'
-    })
-    .select('-__v')
-    .then(dbUser => {
-      res.json(dbUser);
-    })
-    .catch(err => {
-      res.json(err);
-    });
-});
+module.exports = router;
