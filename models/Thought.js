@@ -1,30 +1,43 @@
-
 const { Schema, model } = require("mongoose");
-const { type } = require("os");
+const dateFormat = require("../utils/dateFormat");
+const reactionSchema = require("./Reaction");
 
-const ThoughtSchema = new Schema({
-  thoughtText: {
-    type: String,
-    required: true,
-    minlength: 1,
-    maxlength: 280,
+// thought schema
+const thoughtSchema = new Schema(
+  {
+    thoughtText: {
+      type: String,
+      required: true,
+      maxlength: 280,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      get: (createdAtVal) => dateFormat(createdAtVal),
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    // tying reactions to thought
+    reactions: [reactionSchema],
   },
-  createdAt: 
-    {
-      type:Date,
-     default: Date.now,  
+  {
+    toJSON: {
+      virtuals: true,
+      getters: true,
     },
-    username:
-    {
-        type: String,
-        required: true,
-    },
-    reaction: [
-    reactionSchema
-    ]
-    
+    id: false,
+  }
+);
+
+// get total count of friends
+thoughtSchema.virtual("reactionCount").get(function () {
+  return this.reactions.length;
 });
 
-const User = model("Thought", ThoughtSchema);
+// create the User model using the UserSchema
+const Thought = model("Thought", thoughtSchema);
 
+// export the User model
 module.exports = Thought;
